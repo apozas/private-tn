@@ -1,7 +1,7 @@
 ## Code to accompany *[Physics solutions to machine learning privacy leaks](https://www.arxiv.org/abs/2203.xxxxx)*
-#### Alejandro Pozas-Kerstjens, Senaida Hernández-Santana, José Ramón Pareja Monturiol, Marcos Castrillón López, Giannicola Scarpa, Carlos González-Guillén, and David Pérez-García
+#### Alejandro Pozas-Kerstjens, Senaida Hernández-Santana, José Ramón Pareja Monturiol, Marcos Castrillón López, Giannicola Scarpa, Carlos E. González-Guillén, and David Pérez-García
 
-This repository contains the codes used for the article "*Physics solutions to machine learning privacy leaks*. Alejandro Pozas-Kerstjens, Senaida Hernández-Santana, José Ramón Pareja Monturiol, Carlos González-Guillén, Giannicola Scarpa, and David Pérez-García. [arXiv:2202.xxxxx](https://www.arxiv.org/abs/2202.xxxxx)." It provides the codes for cleaning the [global.health database](https://global.health/), training neural network and matrix product state models on the dataset generated, and attacking the models via shadow training.
+This repository contains the codes used for the article "*Physics solutions to machine learning privacy leaks*. Alejandro Pozas-Kerstjens, Senaida Hernández-Santana, José Ramón Pareja Monturiol, Carlos E. González-Guillén, Giannicola Scarpa, and David Pérez-García. [arXiv:2202.xxxxx](https://www.arxiv.org/abs/2202.xxxxx)." It provides the codes for cleaning the [global.health database](https://global.health/), training neural network and matrix product state models on the dataset generated, and attacking the models via shadow training.
 
 All code is written in Python.
 
@@ -35,11 +35,11 @@ Files:
   - [create_mps_dataset_from_models](https://github.com/apozas/private-tn/blob/main/matrix_product_states/create_mps_dataset_from_models.py): Generate the dataset with all the matrix product states' model parameters, either in standard or in canonical form.
 If you would like to cite this work, please use the following format:
 
-A. Pozas-Kerstjens, S. Hernández-Santana, J. R. Pareja Monturiol, M. Castrillón López, G. Scarpa, C. González-Guillén, and D. Pérez-García, _Physics solutions to machine learning privacy leaks_, arXiv:2203.xxxxx
+A. Pozas-Kerstjens, S. Hernández-Santana, J. R. Pareja Monturiol, M. Castrillón López, G. Scarpa, C. E. González-Guillén, and D. Pérez-García, _Physics solutions to machine learning privacy leaks_, arXiv:2203.xxxxx
 
 ```
 @misc{pozaskerstjens2022privatetn,
-author = {Pozas-Kerstjens, Alejandro and Hern\'andez-Santana, Senaida and Pareja Monturiol, Jos\'e Ram\'on and Castrill\'on L\'opez, Marco and Scarpa, Giannicola and Gonz\'alez-Guill\'en, Carlos and P\'erez-Garc\'ia, David},
+author = {Pozas-Kerstjens, Alejandro and Hern\'andez-Santana, Senaida and Pareja Monturiol, Jos\'e Ram\'on and Castrill\'on L\'opez, Marco and Scarpa, Giannicola and Gonz\'alez-Guill\'en, Carlos E. and P\'erez-Garc\'ia, David},
 title = {Physics solutions to machine learning privacy leaks},
 eprint = {2203.xxxxx},
 archivePrefix={arXiv}
