@@ -30,6 +30,9 @@ Files:
   - [generate_nn_models](https://github.com/apozas/private-tn/blob/main/neural_networks/generate_nn_models.py): Train neural network models on predicting COVID-19 outcome given demographics and symptoms.
   - [utils_nn](https://github.com/apozas/private-tn/blob/main/neural_networks/utils_nn.py): Helper function for data processing and model training.
 
+
+- Matrix product states
+  - [create_mps_dataset_from_models](https://github.com/apozas/private-tn/blob/main/matrix_product_states/create_mps_dataset_from_models.py): Generate the dataset with all the matrix product states' model parameters, either in standard or in canonical form.
 If you would like to cite this work, please use the following format:
 
 A. Pozas-Kerstjens, S. Hernández-Santana, J. R. Pareja Monturiol, M. Castrillón López, G. Scarpa, C. González-Guillén, and D. Pérez-García, _Physics solutions to machine learning privacy leaks_, arXiv:2203.xxxxx
