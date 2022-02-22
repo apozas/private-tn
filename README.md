@@ -32,7 +32,14 @@ Files:
 
 
 - Matrix product states
+  - [attack_mps](https://github.com/apozas/private-tn/blob/main/matrix_product_states/attack_mps.py): Attacks, based on shadow training, inferring the parity of the registration day of the matrix product states' training data.
+  - [batchtensornetwork](https://github.com/apozas/private-tn/blob/main/matrix_product_states/batchtensornetwork.py): Functions for evaluating matrix product states on input data.
+  - [classifier](https://github.com/apozas/private-tn/blob/main/matrix_product_states/classifier.py): Definition of the _classifier_ matrix product state model.
   - [create_mps_dataset_from_models](https://github.com/apozas/private-tn/blob/main/matrix_product_states/create_mps_dataset_from_models.py): Generate the dataset with all the matrix product states' model parameters, either in standard or in canonical form.
+  - [generate_mps_models](https://github.com/apozas/private-tn/blob/main/matrix_product_states/generate_mps_models.py): Train matrix product state models on predicting COVID-19 outcome given demographics and symptoms.
+  - [training](https://github.com/apozas/private-tn/blob/main/matrix_product_states/training.py): Functions for training matrix produc state models.
+  - [utils_mps](https://github.com/apozas/private-tn/blob/main/matrix_product_states/utils_mps.py): Helper function for data processing and model training.
+
 If you would like to cite this work, please use the following format:
 
 A. Pozas-Kerstjens, S. Hernández-Santana, J. R. Pareja Monturiol, M. Castrillón López, G. Scarpa, C. E. González-Guillén, and D. Pérez-García, _Physics solutions to machine learning privacy leaks_, arXiv:2203.xxxxx
