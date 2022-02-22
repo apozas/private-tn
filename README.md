@@ -24,6 +24,12 @@ Files:
   - [database_processing](https://github.com/apozas/private-tn/blob/main/database_processing.py): Clean the [global.health](https://global.health/) database to generate the dataset used in the experiments.
 
 
+- Neural networks
+  - [attack_nn](https://github.com/apozas/private-tn/blob/main/neural_networks/attack_nn.py): Attacks inferring the parity of the registration day of the neural networks' training data.
+  - [create_nn_dataset_from_models](https://github.com/apozas/private-tn/blob/main/neural_networks/create_nn_dataset_from_models.py): Generate the dataset with all the neural networks' model parameters.
+  - [generate_nn_models](https://github.com/apozas/private-tn/blob/main/neural_networks/generate_nn_models.py): Train neural network models on predicting COVID-19 outcome given demographics and symptoms.
+  - [utils_nn](https://github.com/apozas/private-tn/blob/main/neural_networks/utils_nn.py): Helper function for data processing and model training.
+
 If you would like to cite this work, please use the following format:
 
 A. Pozas-Kerstjens, S. Hernández-Santana, J. R. Pareja Monturiol, M. Castrillón López, G. Scarpa, C. González-Guillén, and D. Pérez-García, _Physics solutions to machine learning privacy leaks_, arXiv:2203.xxxxx
