@@ -1,7 +1,7 @@
 ## Code to accompany *[Physics solutions to machine learning privacy leaks](https://www.arxiv.org/abs/2203.xxxxx)*
-#### Alejandro Pozas-Kerstjens, Senaida Hernández-Santana, José Ramón Pareja Monturiol, Marcos Castrillón López, Giannicola Scarpa, Carlos E. González-Guillén, and David Pérez-García
+#### Alejandro Pozas-Kerstjens, Senaida Hernández-Santana, José Ramón Pareja Monturiol, Marco Castrillón López, Giannicola Scarpa, Carlos E. González-Guillén, and David Pérez-García
 
-This repository contains the codes used for the article "*Physics solutions to machine learning privacy leaks*. Alejandro Pozas-Kerstjens, Senaida Hernández-Santana, José Ramón Pareja Monturiol, Carlos E. González-Guillén, Giannicola Scarpa, and David Pérez-García. [arXiv:2202.xxxxx](https://www.arxiv.org/abs/2202.xxxxx)." It provides the codes for cleaning the [global.health database](https://global.health/), training neural network and matrix product state models on the dataset generated, and attacking the models via shadow training.
+This repository contains the codes used for the article "*Physics solutions to machine learning privacy leaks*. Alejandro Pozas-Kerstjens, Senaida Hernández-Santana, José Ramón Pareja Monturiol, Marco Castrillón López, Giannicola Scarpa, Carlos E. González-Guillén, and David Pérez-García. [arXiv:2202.xxxxx](https://www.arxiv.org/abs/2202.xxxxx)." It provides the codes for cleaning the [global.health database](https://global.health/), training neural network and matrix product state models on the dataset generated, and attacking the models via shadow training.
 
 All code is written in Python.
 
