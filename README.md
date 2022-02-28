@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6302728.svg)](https://doi.org/10.5281/zenodo.6302728)
+
 ## Code to accompany *[Physics solutions to machine learning privacy leaks](https://www.arxiv.org/abs/2202.12319)*
 #### Alejandro Pozas-Kerstjens, Senaida Hernández-Santana, José Ramón Pareja Monturiol, Marco Castrillón López, Giannicola Scarpa, Carlos E. González-Guillén, and David Pérez-García
 
