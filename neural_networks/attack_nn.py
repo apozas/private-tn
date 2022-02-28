@@ -1,6 +1,6 @@
 # Code for
 # Physics solutions for machine learning privacy leaks
-# arXiv:2203.xxxxx
+# arXiv:2202.12319
 #
 # Authors: Alejandro Pozas-Kerstjens and Senaida Hernandez-Santana
 #
