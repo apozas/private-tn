@@ -6,12 +6,12 @@
 #
 # Requires: numpy for array operations
 #           tensorflow for ML
-# Last modified: Feb, 2022
+# Last modified: Feb, 2023
 
-################################################################################
-# This file contains the functions needed for training the MPS models created in
-# classifier.py.
-################################################################################
+###############################################################################
+# This file contains the functions needed for training the MPS models created
+# in classifier.py.
+###############################################################################
 import classifier
 import numpy as np
 import tensorflow as tf
@@ -157,8 +157,10 @@ def run_epoch(mps: classifier.MatrixProductState, data_generator,
     return loss, logits_output
 
 
-def run_step(mps: classifier.MatrixProductState, optimizer,
-             data: tf.Tensor, labels: tf.Tensor) -> Tuple[tf.Tensor, tf.Tensor]:
+def run_step(mps: classifier.MatrixProductState,
+             optimizer,
+             data: tf.Tensor,
+             labels: tf.Tensor) -> Tuple[tf.Tensor, tf.Tensor]:
     '''Runs a single training step for one batch
 
     Args:

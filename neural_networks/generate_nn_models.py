@@ -10,16 +10,16 @@
 #           pandas for dataset operations
 #           torch for ML
 #           tqdm for progress bar
-# Last modified: Feb, 2022
+# Last modified: Feb, 2023
 
-################################################################################
+###############################################################################
 # This file trains the neural network models.
-# We produce 100 datasets from the global.health database, each with 1000 points
-# with even registration day and 1000 points with odd registration day. From
-# these, we sample datasets that have some percentages of odd and even points,
-# and we train 100 models on each of the resulting datasets (all this, x2 for
-# majority of odd vs. majority of even).
-################################################################################
+# We produce 100 datasets from the global.health database, each with 1000
+# points with even registration day and 1000 points with odd registration day.
+# From these, we sample datasets that have some percentages of odd and even
+# points, and we train 100 models on each of the resulting datasets (all this,
+# x2 for majority of odd vs. majority of even).
+###############################################################################
 import os, sys
 import torch
 import numpy as np
@@ -30,10 +30,10 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 from utils_nn import *
 
-################################################################################
+###############################################################################
 # Argument parsing
 # Arguments to be (optionally) input: Start dataset, end dataset, device
-################################################################################
+###############################################################################
 args   = sys.argv
 dev_no = 'cuda:0'
 if len(args) == 1:
@@ -51,9 +51,9 @@ else:
     end       = int(args[2])
     dev_no    = args[3]
 
-################################################################################
+###############################################################################
 # Parameters
-################################################################################
+###############################################################################
 parent_dir       = '..'
 data_dir         = f'{parent_dir}/datasets'
 model_dir        = f'{parent_dir}/models/nn'
@@ -68,16 +68,16 @@ nn_acc_threshold = 0.84    # Minimum training accuracy expected
 device           = torch.device(dev_no if torch.cuda.is_available() else 'cpu')
 np.random.seed(1)
 
-################################################################################
+###############################################################################
 # Check directories and models already trained
-################################################################################
+###############################################################################
 df = pd.read_csv(f'{data_dir}/covid_argentina_colombia_until20210322.csv',
                  index_col=0)
 print('Dataframe loaded')
 
 # Data directories
 if not all([os.path.exists(f'{data_dir}/{instance}')
-                                                for instance in range(1, 101)]):
+            for instance in range(1, 101)]):
     print('Data directories not found. Creating...')
     for instance in range(1, 101):
         os.makedirs(f'{data_dir}/{instance}')
@@ -88,7 +88,7 @@ if not all([os.path.exists(f'{data_dir}/{instance}')
 
 # Model directories
 if not all([os.path.exists(f'{model_dir}/{instance}')
-                                                for instance in range(1, 101)]):
+            for instance in range(1, 101)]):
     print('Model directories not found. Creating...')
     for instance in range(1, 101):
         os.makedirs(f'{model_dir}/{instance}')
@@ -107,7 +107,7 @@ for instance in range(1, 101):
     ninetyfive = [0, 0, 0.95]
     ninetynine = [0, 0, 0.99]
     for filename in [name for name in os.listdir(f'{model_dir}/{instance}')
-                          if name.split('.')[-1] == 'pt']:
+                     if name.split('.')[-1] == 'pt']:
         relevant_info = filename.split('_')[1]
         try:
             imbalance_level = float(relevant_info[:4])
@@ -140,9 +140,9 @@ for instance in range(1, 101):
 # print('Count of models in the working range')
 # print(all_models[beginning:end])
 
-################################################################################
+###############################################################################
 # Prepare datasets and train
-################################################################################
+###############################################################################
 print('Preparing test dataset')
 # Test dataset, from the full dataset
 test_dataset    = preprocess_nn(df.sample(n=5000))
@@ -165,8 +165,8 @@ for jj in range(len(imbalances)):
         # Generate or use existing imbalanced datasets
         if f'{percent_good}even.csv' in os.listdir(f'{data_dir}/{instance}'):
             even_dataset = pd.read_csv(
-                                f'{data_dir}/{instance}/{percent_good}even.csv',
-                                       index_col=0)
+                               f'{data_dir}/{instance}/{percent_good}even.csv',
+                               index_col=0)
         else:
             even_dataset = even.sample(frac=percent_good
                                        ).append(odd.sample(frac=1-percent_good),
@@ -182,8 +182,8 @@ for jj in range(len(imbalances)):
 
         if f'{percent_good}odd.csv' in os.listdir(f'{data_dir}/{instance}'):
             odd_dataset = pd.read_csv(
-                                 f'{data_dir}/{instance}/{percent_good}odd.csv',
-                                      index_col=0)
+                                f'{data_dir}/{instance}/{percent_good}odd.csv',
+                                index_col=0)
         else:
             odd_dataset = odd.sample(frac=percent_good
                                      ).append(even.sample(frac=1-percent_good),
@@ -210,8 +210,8 @@ for jj in range(len(imbalances)):
                                                  lr=learning_rate,
                                                  weight_decay=weight_decay)
                     loader = DataLoader([[point, label]
-                                    for point, label in zip(input_tensor_even,
-                                                            label_tensor_even)],
+                                   for point, label in zip(input_tensor_even,
+                                                           label_tensor_even)],
                                         shuffle=True,
                                         batch_size=batch_size)
                     best_test_acc = 0
@@ -254,8 +254,8 @@ for jj in range(len(imbalances)):
                                                  lr=learning_rate,
                                                  weight_decay=weight_decay)
                     loader = DataLoader([[point, label]
-                                     for point, label in zip(input_tensor_odd,
-                                                             label_tensor_odd)],
+                                    for point, label in zip(input_tensor_odd,
+                                                            label_tensor_odd)],
                                         shuffle=True,
                                         batch_size=batch_size)
                     best_test_acc = 0

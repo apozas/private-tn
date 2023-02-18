@@ -7,13 +7,13 @@
 # Requires: matplotlib for plotting
 #           pandas for dataset operations
 #           seaborn for plot visuals
-# Last modified: Feb, 2022
+# Last modified: Feb, 2023
 
-################################################################################
+###############################################################################
 # This file generates Figure 2d in the paper, which compares the robustness of
 # white-box neural networks and MPS against guessing the bias of an irrelevant
 # input feature in the training dataset.
-################################################################################
+###############################################################################
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd

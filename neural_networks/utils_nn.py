@@ -7,15 +7,16 @@
 # Requires: numpy for array operations
 #           pandas for dataset operations
 #           torch for ML
-# Last modified: Feb, 2022
+# Last modified: Feb, 2023
 
-################################################################################
-# This file contains helper functions for the training of neural network models.
-################################################################################
+###############################################################################
+# This file contains helper functions for the training of neural network models
+###############################################################################
 import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
+
 
 class SimpleNNModel(nn.Module):
     '''Neural network model used in the experiments
@@ -37,6 +38,7 @@ class SimpleNNModel(nn.Module):
         out4 = self.activation(self.linear4(out3))
         out5 = self.lastlayer(out4)
         return out5
+
 
 def preprocess_nn(dataset):
     '''Data processing in order to feed it to the neural network models.
@@ -63,6 +65,7 @@ def preprocess_nn(dataset):
         dataset[col] = (dataset[col] - mean) / std
 
     return dataset
+
 
 def dataset_to_torch(dataset, train_ratio):
     '''Transform a Pandas DataFrame into train-test pytorch Tensors.

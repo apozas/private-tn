@@ -8,11 +8,11 @@
 #           pandas for dataset operations
 #           scikit-learn for ML utils
 #           tensorflow for ML
-# Last modified: Feb, 2022
+# Last modified: Feb, 2023
 
-################################################################################
+###############################################################################
 # This file contains helper functions for the training of MPS models.
-################################################################################
+###############################################################################
 import numpy as np
 import pandas as pd
 
@@ -23,6 +23,7 @@ from typing import List, Tuple
 # Values needed for normalization, extracted from the complete database
 database_max_age = 120.
 database_min_age = 0.
+
 
 def convert_binary_to_continuous(array: np.array,
                                  gap: float = 0.1) -> np.array:
@@ -40,8 +41,8 @@ def convert_binary_to_continuous(array: np.array,
     delta = gap / 2
     array_below = np.random.uniform(low=0, high=0.5-delta, size=[len(array)])
     array_above = np.random.uniform(low=0.5+delta, high=1, size=[len(array)])
-    array_cont  = np.array([array_above[idx] if array[idx] else array_below[idx]
-                            for idx in range(len(array))])
+    array_cont = np.array([array_above[idx] if array[idx] else array_below[idx]
+                           for idx in range(len(array))])
     return array_cont
 
 
@@ -57,7 +58,7 @@ def convert_data(X: np.array) -> np.array:
     n_features = X.shape[1]
     X_cont = X.copy()
     for idx in range(n_features):
-        X_cont[:,idx] = convert_binary_to_continuous(X[:,idx])
+        X_cont[:, idx] = convert_binary_to_continuous(X[:, idx])
     return X_cont
 
 
@@ -75,8 +76,8 @@ def dataset_to_mps_input(data: np.array) -> np.array:
 
 
 def flatten_mps_tensors(mps_tensors: List[Variable]) -> np.array:
-    '''Flatten out all the tensors in an MPS, so the result is a one-dimensional
-    list of numbers.
+    '''Flatten out all the tensors in an MPS, so the result is a
+    one-dimensional list of numbers.
 
     Args:
       mps_tensors: List of tensors, stored as Tensorflow Variables.
@@ -114,7 +115,7 @@ def preprocess_mps(dataset: pd.DataFrame) -> Tuple[np.array, np.array]:
     y = dataset[label].values
 
     # Encode categorical variables in continuous ranges
-    X[:,1:] = convert_data(X[:,1:])
+    X[:, 1:] = convert_data(X[:, 1:])
 
     # One-hot encode labels
     y = OneHotEncoder().fit_transform(y).toarray()

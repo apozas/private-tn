@@ -5,13 +5,13 @@
 # Authors: Alejandro Pozas-Kerstjens and Senaida Hernandez-Santana
 #
 # Requires: os for filesystem operations
-#			pandas for CSV operations
-# Last modified: Feb, 2022
+#           pandas for CSV operations
+# Last modified: Feb, 202
 
-################################################################################
+##############################################################################
 # This file processes the global.health database in order to generate the large
 # dataset that will be partitioned and trained on in the experiments.
-################################################################################
+###############################################################################
 import os
 import pandas as pd
 
@@ -70,17 +70,17 @@ data.reset_index(inplace=True)
 
 # Extract the day of confirmation and store its parity
 days        = data['date'].apply(lambda x: x.split('-')[-1]).astype(int)
-odd_day     = (days%2 != 0)
+odd_day     = (days % 2 != 0)
 data['odd'] = odd_day
 
 # Choose columns for the final database
 columns = ['odd', 'country', 'age', 'gender', 'symptomatic', 'outcome']
 data    = data[columns]
 
-################################################################################
+###############################################################################
 # Generate a dataset with the same number of recovery and non-recovery cases,
 # and even and odd registration day
-################################################################################
+###############################################################################
 recovered    = data[data.outcome == 'Recovered']
 nonrecovered = data[data.outcome == 'Death']
 
@@ -95,9 +95,9 @@ balanced_dataset = pd.concat([nonrecovered,
 						      recovered_col[~recovered_col.odd].iloc[:count]])
 balanced_dataset.sort_index(inplace=True)
 
-################################################################################
+###############################################################################
 # Final simplifications
-################################################################################
+###############################################################################
 # Replace strings for booleans
 balanced_dataset.replace({'country': {'Argentina': True, 'Colombia': False},
 				          'gender':  {'Female': True, 'Male': False},
@@ -112,5 +112,5 @@ balanced_dataset.rename(columns={'country': 'argentina',
 
 # Final export
 if not os.path.isdir('datasets'):
-    os.mkdir('datasets')
+	os.mkdir('datasets')
 balanced_dataset.to_csv('datasets/covid_argentina_colombia_until20210322.csv')

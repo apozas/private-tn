@@ -10,15 +10,15 @@
 #           os, sys for filesystem operations
 #           tensorflow for ML
 #           tqdm for progress bar
-# Last modified: Feb, 2022
+# Last modified: Feb, 2023
 
-################################################################################
+###############################################################################
 # This file performs the attacks for inferring the irrelevant variable in MPS.
 # architectures. The attacks are, for each level of imbalance of the irrelevant
 # variable, neural networks trained on all the models trained on 80 of the
 # datasets (a total of 80x100x2). The accuracy is the evaluation of the
 # resulting neural network in all the models trained on the remaining datasets.
-################################################################################
+###############################################################################
 import numpy as np
 import os, sys
 import pandas as pd
@@ -34,10 +34,10 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping
 from tqdm import tqdm
 
-################################################################################
+###############################################################################
 # Argument parsing
 # Arguments to be input: whether canonical form is generated (c) or not (n)
-################################################################################
+###############################################################################
 args = sys.argv
 if len(args) != 2:
     raise Exception('Please, specify whether you want to attack the canonical'
@@ -61,17 +61,17 @@ else:
 ################################################################################
 def define_attack_and_train(train_data, train_labels, val_data, val_labels,
                             test_data, test_labels, hparams,
-                            verbose: bool=False):
+                            verbose=False):
     regularizer = L2(l2=hparams['REGULARIZER'])
     layers = []
     layers.append(Input(shape=(n_features,)))
     layers.append(Dropout(rate=hparams['DROPOUT'], input_shape=(n_features,)))
     for ii in range(hparams['N_LAYERS']):
-        layers.append(Dense(hparams['N_UNITS']//min(2**ii,hparams['N_UNITS']),
+        layers.append(Dense(hparams['N_UNITS']//min(2**ii, hparams['N_UNITS']),
                             activation="relu",
                             kernel_regularizer=regularizer))
         layers.append(Dropout(rate=hparams['DROPOUT']))
-        layers.append(Dense(hparams['N_UNITS']//min(2**ii,hparams['N_UNITS']),
+        layers.append(Dense(hparams['N_UNITS']//min(2**ii, hparams['N_UNITS']),
                             activation="relu",
                             kernel_regularizer=regularizer))
         layers.append(Dropout(rate=hparams['DROPOUT']))
@@ -84,7 +84,7 @@ def define_attack_and_train(train_data, train_labels, val_data, val_labels,
                         kernel_regularizer=regularizer))
     model = Sequential(layers)
 
-    model.compile(optimizer = Adam(learning_rate=hparams['LEARNING_RATE']),
+    model.compile(optimizer=Adam(learning_rate=hparams['LEARNING_RATE']),
                   loss='categorical_crossentropy',
                   metrics=["mae", "accuracy"])
 
@@ -111,9 +111,9 @@ def define_attack_and_train(train_data, train_labels, val_data, val_labels,
 
     return model, accuracy_test
 
-################################################################################
+###############################################################################
 # Parameters
-################################################################################
+###############################################################################
 parent_dir   = '..'
 data_dir     = f'{parent_dir}/datasets'
 attack_dir   = f'{parent_dir}/results'
@@ -121,7 +121,7 @@ can_str      = '' if canonical else 'n'
 all_models   = pd.read_csv(f'{data_dir}/dataset_of_mps_models_{can_str}can.csv',
                          index_col=0)
 test_size        = 0.2
-n_train_datasets = 80 # No. of datasets whose models will be used for training
+n_train_datasets = 80  # No. of datasets whose models will be used for training
 data_columns     = all_models.columns[5:]
 n_features       = len(data_columns)
 n_labels         = 2
@@ -136,9 +136,9 @@ hparams          = {
                     'PATIENCE': 0
                     }
 
-################################################################################
+###############################################################################
 # Attacks
-################################################################################
+###############################################################################
 test_accs   = []
 test_stds   = []
 attack_rows = []
@@ -153,9 +153,11 @@ for imbalance, dataset in tqdm(all_models.groupby('imbalance'),
     dataset = dataset.drop(columns=['type', 'imbalance'])
 
     test_accs_attacks = []
-    for _ in tqdm(range(1000),leave=False):
+    for _ in tqdm(range(1000), leave=False):
 
-        choice = np.random.choice(range(1,101), n_train_datasets, replace=False)
+        choice = np.random.choice(range(1, 101),
+                                  n_train_datasets,
+                                  replace=False)
 
         train  = dataset[dataset.dataset.isin(choice)]
         test   = dataset[~dataset.dataset.isin(choice)]

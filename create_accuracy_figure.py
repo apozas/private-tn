@@ -12,13 +12,13 @@
 #           seaborn for plot visuals
 #           tensorflow, torch for ML
 #           tqdm for progress bar
-# Last modified: Feb, 2022
+# Last modified: Feb, 2023
 
-################################################################################
+###############################################################################
 # This file generates Figure 2c in the paper, which compares the accuracy of
-# neural networks and MPS trained to predict the outcome of a COVID-19 infection
-# given demographics and symptoms.
-################################################################################
+# neural networks and MPS trained to predict the outcome of a COVID-19
+# infection given demographics and symptoms.
+###############################################################################
 import glob, os
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -34,9 +34,9 @@ from matrix_product_states.classifier import MatrixProductState
 from neural_networks.utils_nn import SimpleNNModel, preprocess_nn
 from tqdm import tqdm
 
-################################################################################
+###############################################################################
 # Style data
-################################################################################
+###############################################################################
 sns.set_theme()
 sns.set(style='whitegrid', font_scale=1.8)
 mpl.rcParams['lines.linewidth']  = 0.75
@@ -46,9 +46,9 @@ plt.rc('text', usetex=True)
 plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 plt.rc('font', family='serif')
 
-################################################################################
+###############################################################################
 # Common information
-################################################################################
+###############################################################################
 imbalance_levels = np.array([0.5, 0.51, 0.55, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99])
 data_dir         = 'datasets'
 models_dir       = 'models'
@@ -57,9 +57,9 @@ all_data         = f'{data_dir}/covid_argentina_colombia_until20210322.csv'
 df               = pd.read_csv(all_data, index_col=0)
 device           = torch.device('cpu')
 
-################################################################################
+###############################################################################
 # Neural network data
-################################################################################
+###############################################################################
 nn_data_exists = (len([file for file in glob.glob(f'{results_dir}/*_nn_*')])
                   == 4)
 if not nn_data_exists:
@@ -93,7 +93,7 @@ if not nn_data_exists:
                                              )[0].item()
                     typ = 0 if model.split('_')[1][-3:] == 'odd' else 1
                     NN.load_state_dict(torch.load(
-                                          f'{models_dir}/nn/{dataset}/{model}'))
+                                         f'{models_dir}/nn/{dataset}/{model}'))
                     acc = (NN(data_tensor).argmax(dim=1)
                            == data_labels).sum().item()
                     acc /= len(data_labels)
@@ -101,10 +101,10 @@ if not nn_data_exists:
         all_accuracies.append(accuracies)
     all_accuracies = np.array(all_accuracies)
     avg_accuracies_per_dataset = all_accuracies.mean(-1)
-    acc_nns_odd    = avg_accuracies_per_dataset[:,0,:].mean(0)
-    std_nns_odd    = avg_accuracies_per_dataset[:,0,:].std(0)
-    acc_nns_even   = avg_accuracies_per_dataset[:,1,:].mean(0)
-    std_nns_even   = avg_accuracies_per_dataset[:,1,:].std(0)
+    acc_nns_odd    = avg_accuracies_per_dataset[:, 0, :].mean(0)
+    std_nns_odd    = avg_accuracies_per_dataset[:, 0, :].std(0)
+    acc_nns_even   = avg_accuracies_per_dataset[:, 1, :].mean(0)
+    std_nns_even   = avg_accuracies_per_dataset[:, 1, :].std(0)
     np.savetxt(f'{results_dir}/acc_nn_odd.txt',  acc_nns_odd)
     np.savetxt(f'{results_dir}/acc_nn_even.txt', acc_nns_even)
     np.savetxt(f'{results_dir}/std_nn_odd.txt',  std_nns_odd)
@@ -116,11 +116,11 @@ else:
     std_nns_odd  = np.loadtxt(f'{results_dir}/std_nn_odd.txt')
     std_nns_even = np.loadtxt(f'{results_dir}/std_nn_even.txt')
 
-################################################################################
+###############################################################################
 # MPS data
-################################################################################
+###############################################################################
 mps_data_exists = (len([file
-                           for file in glob.glob(f'{results_dir}/*_mps_*.txt')])
+                        for file in glob.glob(f'{results_dir}/*_mps_*.txt')])
                    == 4)
 if not mps_data_exists:
     print('Calculating data for MPS')
@@ -152,10 +152,10 @@ if not mps_data_exists:
         all_accuracies.append(accuracies)
     all_accuracies = np.array(all_accuracies)
     avg_accuracies_per_dataset = all_accuracies.mean(-1)
-    acc_mps_odd  = avg_accuracies_per_dataset[:,0,:].mean(0)
-    std_mps_odd  = avg_accuracies_per_dataset[:,0,:].std(0)
-    acc_mps_even = avg_accuracies_per_dataset[:,1,:].mean(0)
-    std_mps_even = avg_accuracies_per_dataset[:,1,:].std(0)
+    acc_mps_odd  = avg_accuracies_per_dataset[:, 0, :].mean(0)
+    std_mps_odd  = avg_accuracies_per_dataset[:, 0, :].std(0)
+    acc_mps_even = avg_accuracies_per_dataset[:, 1, :].mean(0)
+    std_mps_even = avg_accuracies_per_dataset[:, 1, :].std(0)
     np.savetxt(f'{results_dir}/acc_mps_odd.txt',  acc_mps_odd)
     np.savetxt(f'{results_dir}/acc_mps_even.txt', acc_mps_even)
     np.savetxt(f'{results_dir}/std_mps_odd.txt',  std_mps_odd)
@@ -167,9 +167,9 @@ else:
     std_mps_odd  = np.loadtxt(f'{results_dir}/std_mps_odd.txt')
     std_mps_even = np.loadtxt(f'{results_dir}/std_mps_even.txt')
 
-################################################################################
+###############################################################################
 # Plot
-################################################################################
+###############################################################################
 print(acc_mps_odd)
 print(acc_mps_even)
 plt.errorbar(imbalance_levels, acc_mps_odd,  std_mps_odd,

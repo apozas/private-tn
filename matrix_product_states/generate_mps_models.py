@@ -12,12 +12,12 @@
 #           seaborn for plot visuals
 #           tensorflow for ML
 #           tqdm for progress bar
-# Last modified: Feb, 2022
+# Last modified: Feb, 2023
 
-################################################################################
+###############################################################################
 # This file trains the MPS models, in the same way that the neural network
 # models are trained.
-################################################################################
+###############################################################################
 import numpy as np
 import os, sys
 import pandas as pd
@@ -31,10 +31,10 @@ from tensorflow.keras.optimizers import Adam
 from tqdm import tqdm
 from utils_mps import preprocess_mps
 
-################################################################################
+###############################################################################
 # Argument parsing
 # Arguments to be (optionally) input: Start dataset, end dataset
-################################################################################
+###############################################################################
 args = sys.argv
 if len(args) == 1:
     beginning = 0
@@ -46,9 +46,9 @@ elif len(args) == 3:
     beginning = int(args[1])
     end = int(args[2])
 
-################################################################################
+###############################################################################
 # Parameters
-################################################################################
+###############################################################################
 parent_dir        = '..'
 data_dir          = f'{parent_dir}/datasets'
 model_dir         = f'{parent_dir}/models/mps'
@@ -60,15 +60,15 @@ n_epochs          = 20
 mps_acc_threshold = 0.81    # Minimum training accuracy expected
 black_box_diff    = 0.05    # Maximum difference between black-box accuracies
 
-################################################################################
+###############################################################################
 # Check directories and models already trained
-################################################################################
+###############################################################################
 data = pd.read_csv(f'{data_dir}/covid_argentina_colombia_until20210322.csv',
                    header=0, index_col=0, low_memory=False)
 print('Dataframe loaded')
 # Data directories
 if not all([os.path.exists(f'{data_dir}/{instance}')
-                                                for instance in range(1, 101)]):
+            for instance in range(1, 101)]):
     print('Data directories not found. Creating...')
     for instance in range(1, 101):
         os.makedirs(f'{data_dir}/{instance}')
@@ -79,7 +79,7 @@ if not all([os.path.exists(f'{data_dir}/{instance}')
 
 # Model directories
 if not all([os.path.exists(f'{model_dir}/{instance}')
-                                                for instance in range(1, 101)]):
+            for instance in range(1, 101)]):
     print('Model directories not found. Creating...')
     for instance in range(1, 101):
         os.makedirs(f'{model_dir}/{instance}')
@@ -128,18 +128,15 @@ for instance in range(1, 101):
                       dtype=object)
     all_models.append(models)
 
-# print('Count of models in the working range')
-# print(all_models_all_instances[beginning:end])
-
-################################################################################
+###############################################################################
 # Prepare datasets and train
-################################################################################
+###############################################################################
 print('Preparing test dataset')
 # Test dataset, from the full dataset
 X_test, y_test = preprocess_mps(data.sample(n=5000))
 # Complete dataset, for black-box comparison
 X_total, y_total = preprocess_mps(data)
-odd_indices  = np.where(X_total[:,-1,0] > 0.5)[0]
+odd_indices  = np.where(X_total[:, -1, 0] > 0.5)[0]
 even_indices = list(set(range(len(data))) - set(odd_indices))
 X_even_total = tf.cast(X_total[even_indices], tf.float32)
 y_even_total = tf.cast(y_total[even_indices], tf.float32)
@@ -160,8 +157,8 @@ for jj in range(len(imbalances)):
         # Generate or use existing imbalanced datasets
         if f'{percent_good}even.csv' in os.listdir(f'{data_dir}/{instance}'):
             even_dataset = pd.read_csv(
-                                f'{data_dir}/{instance}/{percent_good}even.csv',
-                                       index_col=0)
+                               f'{data_dir}/{instance}/{percent_good}even.csv',
+                               index_col=0)
         else:
             even_dataset = even.sample(frac=percent_good
                                        ).append(odd.sample(frac=1-percent_good),
@@ -173,8 +170,8 @@ for jj in range(len(imbalances)):
 
         if f'{percent_good}odd.csv' in os.listdir(f'{data_dir}/{instance}'):
             odd_dataset = pd.read_csv(
-                                 f'{data_dir}/{instance}/{percent_good}odd.csv',
-                                      index_col=0)
+                                f'{data_dir}/{instance}/{percent_good}odd.csv',
+                                index_col=0)
         else:
             odd_dataset = odd.sample(frac=percent_good
                                      ).append(even.sample(frac=1-percent_good),
@@ -205,11 +202,11 @@ for jj in range(len(imbalances)):
                 odd_acc  = mps_trained.accuracy(X_odd_total,  y_odd_total)
                 if np.abs(even_acc - odd_acc) < black_box_diff:
                     filedir = (f'{model_dir}/{instance}'
-                       + f'/{n_even}_{percent_good}even_acc{round(test_acc, 3)}'
-                       + '.pickle')
+                      + f'/{n_even}_{percent_good}even_acc{round(test_acc, 3)}'
+                      + '.pickle')
                     with open(filedir, 'wb') as file:
                         mps_numpy = [tensor.numpy()
-                                              for tensor in mps_trained.tensors]
+                                     for tensor in mps_trained.tensors]
                         pickle.dump(mps_numpy, file)
                     n_even += 1
             if n_odd < 100:
@@ -229,11 +226,11 @@ for jj in range(len(imbalances)):
                 odd_acc  = mps_trained.accuracy(X_odd_total,  y_odd_total)
                 if np.abs(even_acc - odd_acc) < black_box_diff:
                     filedir = (f'{model_dir}/{instance}'
-                         + f'/{n_odd}_{percent_good}odd_acc{round(test_acc, 3)}'
-                         + '.pickle')
+                        + f'/{n_odd}_{percent_good}odd_acc{round(test_acc, 3)}'
+                        + '.pickle')
                     with open(filedir, 'wb') as file:
                         mps_numpy = [tensor.numpy()
-                                              for tensor in mps_trained.tensors]
+                                     for tensor in mps_trained.tensors]
                         pickle.dump(mps_numpy, file)
                     n_odd += 1
                     t.update(1)

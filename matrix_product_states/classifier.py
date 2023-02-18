@@ -7,11 +7,11 @@
 # Requires: numpy for array operations
 #           tensorflow for ML
 #           tensornetwork for tensor network operations
-# Last modified: Feb, 2022
+# Last modified: Feb, 2023
 
-################################################################################
+###############################################################################
 # This file defines the MPS classifier object.
-################################################################################
+###############################################################################
 import numpy as np
 import tensorflow as tf
 import tensornetwork as tn
@@ -19,37 +19,39 @@ from tensornetwork import FiniteMPS
 from typing import Tuple, List, Optional
 try:
     from matrix_product_states.batchtensornetwork import \
-                                    batched_contract_between, pairwise_reduction
+                                   batched_contract_between, pairwise_reduction
 except ModuleNotFoundError:
     from batchtensornetwork import batched_contract_between, pairwise_reduction
+
 
 def random_initializer(d_phys_aux: int, d_bond: int, d_phys: int = None,
                        boundary: bool = False, std: float = 0.,
                        right: bool = False) -> np.ndarray:
-  '''Initializes MPS tensors randomly and close to identity matrices.
+    '''Initializes MPS tensors randomly and close to identity matrices.
 
-  Args:
-    d_phys: Physical dimension of the MPS tensor.
-    d_bond: Bond dimension of the MPS tensor.
-    std: standard deviation of normal distribution for random initialization.
-    boundary: If True returns a tensor of shape (d_phys, d_bond).
-              Otherwise returns a tensor of shape (d_phys, d_bond, d_bond).
-    Note that d_phys given in this function does not have to be the actual
-    MPS physical dimension (eg. it can also be n_labels to initialize there
-    label MPS tensor).
+    Args:
+        d_phys: Physical dimension of the MPS tensor.
+        d_bond: Bond dimension of the MPS tensor.
+        std: standard deviation of normal distribution for random initialization.
+        boundary: If True returns a tensor of shape (d_phys, d_bond).
+                  Otherwise returns a tensor of shape (d_phys, d_bond, d_bond).
+        Note that d_phys given in this function does not have to be the actual
+        MPS physical dimension (eg. it can also be n_labels to initialize there
+        label MPS tensor).
 
-  Returns:
-    tensor: Random numpy array with shape described above.
-  '''
-  if boundary:
-      d_phys = d_phys_aux
-      x      = np.zeros((d_phys, d_bond))
-      x[:,0] = 1
-  else:
-      x = np.array(d_phys_aux * [np.eye(d_bond)])
-  x += np.random.normal(0.0, std, size=x.shape)
+    Returns:
+        tensor: Random numpy array with shape described above.
+    '''
+    if boundary:
+        d_phys = d_phys_aux
+        x      = np.zeros((d_phys, d_bond))
+        x[:, 0] = 1
+    else:
+        x = np.array(d_phys_aux * [np.eye(d_bond)])
+    x += np.random.normal(0.0, std, size=x.shape)
 
-  return x
+    return x
+
 
 class Environment:
     '''MatrixProductState environments.
@@ -64,9 +66,9 @@ class Environment:
     left. This parameter has been added to be able to provide all the final
     tensors in the correct order during the training of the full MPS. This is
     convenient to obtain the canonical form. If this is not done one needs to
-    invert the order of the right matrices in the mps classifier, transpose them
-    along the bond dimension edges before a canonical transform, obtain the
-    canonical transform, and then do the reverse operation to insert the
+    invert the order of the right matrices in the mps classifier, transpose
+    them along the bond dimension edges before a canonical transform, obtain
+    the canonical transform, and then do the reverse operation to insert the
     resulting canonical form into the class MatrixProductState.
     '''
     def __init__(self, right: bool, n_features: int, d_phys: int,
@@ -89,8 +91,8 @@ class Environment:
                                           std=std,
                                           right=right)
             self.matrices = tf.Variable(
-                       tensor_m.reshape((n_features-1, d_phys, d_bond, d_bond)),
-                                        dtype=dtype)
+                      tensor_m.reshape((n_features-1, d_phys, d_bond, d_bond)),
+                      dtype=dtype)
         else:
             self.matrices = None
 
@@ -144,9 +146,9 @@ class Environment:
             var_nodes[1] = batched_contract_between(data_nodes[1],
                                                     var_nodes[1],
                                                     data_nodes[1][1],
-                                                    var_nodes[1][0]) # this code
-        # gets rid of all the connected edges -> below, we have to reconnect
-        # var_nodes[0] and var_nodes[1], post data-mps product
+                                                    var_nodes[1][0])
+        # the previous line gets rid of all the connected edges -> below, we
+        # have to reconnect var_nodes[0] and var_nodes[1] post data-mps product
 
         # Contract the artificial "space" index. This step is equivalent to
         # contracting the MPS over the bond dimensions.
@@ -154,15 +156,15 @@ class Environment:
             var_nodes[1] = pairwise_reduction(var_nodes[1], space_edge)
 
         # Contract the final bond edge with the boundary
-            var_nodes[0] = var_nodes[0].copy() #create copy w.o. connected edges
-            var_nodes[0][1] ^ var_nodes[1][1+self.right]  # connect d_bond edges
+            var_nodes[0] = var_nodes[0].copy()  # copy wo connected edges
+            var_nodes[0][1] ^ var_nodes[1][1+self.right]  # connect dbond edges
             # this is necessary since var_nodes[1] is not connected
             batch_edge1, batch_edge2 = var_nodes[0][0], var_nodes[1][0]
             var_nodes = batched_contract_between(var_nodes[0],
                                                  var_nodes[1],
                                                  batch_edge1,
-                                                 batch_edge2)  # notice this is
-                                        # contracting over the second batch_edge
+                                                 batch_edge2)
+            # notice this is contracting over the second batch_edge
         else:
             var_nodes = var_nodes[0]
         return var_nodes.tensor
@@ -180,7 +182,6 @@ class Environment:
         '''
         var_nodes, data_nodes = self.create_network(data_vector, data_matrices)
         return self.contract_network(var_nodes, data_nodes)
-
 
 
 class MatrixProductState:
@@ -203,16 +204,16 @@ class MatrixProductState:
       dtype: Variable type
     '''
     def __init__(self,
-               n_features: int,
-               n_labels: int,
-               d_phys: int,
-               d_bond: int,
-               l_position: Optional[int] = None,
-               std: float = 1e-14,
-               dtype=tf.float32):
+                 n_features: int,
+                 n_labels: int,
+                 d_phys: int,
+                 d_bond: int,
+                 l_position: Optional[int] = None,
+                 std: float = 1e-14,
+                 dtype=tf.float32):
         self.dtype = dtype
         if l_position is None:
-          l_position = n_features // 2
+            l_position = n_features // 2
         self.position = l_position
 
         tensor_l = random_initializer(n_labels, d_bond, std=std)
@@ -246,11 +247,11 @@ class MatrixProductState:
         '''Computes the accuracy of prediction on a given dataset.
 
         Args:
-          data: Tensor with input data, of shape (n_batch, n_features, d_phys).
-          labels: Tensor with corresponding labels, of shape (n_batch,n_labels).
+          data: Tensor with input data, of shape (n_batch, n_features, d_phys)
+          labels: Tensor with corresponding labels, of shape (n_batch,n_labels)
 
         Returns:
-          accuracy: (number of correct predictions) / (number of predictions).
+          accuracy: (number of correct predictions) / (number of predictions)
         '''
         logits = self.flx(data)
         return (logits.numpy().argmax(axis=1)
@@ -293,11 +294,13 @@ class MatrixProductState:
             i = i + 1
         self.right_env.vector = self.tensors[i]
 
-        left  = self.left_env.predict(data[:,0], data[:,1:self.position])
-        right = self.right_env.predict(data[:,-1],data[:,-2:self.position-1:-1])
+        left  = self.left_env.predict(data[:, 0], data[:, 1:self.position])
+        right = self.right_env.predict(data[:, -1],
+                                       data[:, -2:self.position-1:-1])
         return tf.einsum('bl,olr,br->bo', left, self.labeled, right)
 
-    def from_finite(self, finite_mps, right_biased: bool=True):
+
+    def from_finite(self, finite_mps, right_biased=True):
         '''Convert a FiniteMPS from TensorNetwork to a MatrixProductState.
 
         Args:
@@ -307,7 +310,8 @@ class MatrixProductState:
         '''
         # Move the physical index to the first
         tensors_transposed = list(map(
-                              lambda x: tf.transpose(x, perm=[1, 0, 2]).numpy(),
+                              lambda x: tf.transpose(x,
+                                                     perm=[1, 0, 2]).numpy(),
                                   finite_mps.tensors))
 
         # Make the extreme tensors become matrices
@@ -335,28 +339,27 @@ class MatrixProductState:
                                                 (0, 0),
                                                 (0, d_bond-d_bonds_list[i][0]),
                                                 (0, d_bond-d_bonds_list[i][1]))
-                                                    )
-                                 for i in range(1, len(tensors_transposed) - 1)]
+                   ) for i in range(1, len(tensors_transposed) - 1)]
 
         # Create tensors
         mps_left_edge = tf.Variable(tensors_transposed_and_padded_left,
                                     dtype=finite_mps.dtype)
         mps_tensors = [mps_left_edge]
 
-        if ((n_features == 3) & (not right_biased)) | (n_features>=4):
+        if ((n_features == 3) & (not right_biased)) | (n_features >= 4):
             mps_left_bulk = tf.Variable(np.array(
-                       tensors_transposed_and_padded_bulk[0:(n_features-2)//2]),
+                      tensors_transposed_and_padded_bulk[0:(n_features-2)//2]),
                                         dtype=finite_mps.dtype)
             mps_tensors.append(mps_left_bulk)
 
         mps_center = tf.Variable(
-                          tensors_transposed_and_padded_bulk[(n_features-2)//2],
+                         tensors_transposed_and_padded_bulk[(n_features-2)//2],
                                  dtype=finite_mps.dtype)
         mps_tensors.append(mps_center)
 
-        if ((n_features == 3) & right_biased) | (n_features>=4):
+        if ((n_features == 3) & right_biased) | (n_features >= 4):
             mps_right_bulk = tf.Variable(np.array(
-                      tensors_transposed_and_padded_bulk[(n_features-2)//2+1:]),
+                     tensors_transposed_and_padded_bulk[(n_features-2)//2+1:]),
                                          dtype=finite_mps.dtype)
             mps_tensors.append(mps_right_bulk)
 

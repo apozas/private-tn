@@ -11,15 +11,15 @@
 #           scikit-learn for logistic regression
 #           torch for ML
 #           tqdm for progress bar
-# Last modified: Feb, 2022
+# Last modified: Feb, 2023
 
-################################################################################
-# This file performs the attacks for inferring the irrelevant variable in neural
-# networks. The attacks are, for each level of imbalance of the irrelevant
-# variable, logistic regressors trained on all the models trained on 80 of the
-# datasets (a total of 80x100x2). The accuracy is the evaluation of the
-# regressor in all the models trained on the remaining 20 datasets.
-################################################################################
+###############################################################################
+# This file performs the attacks for inferring the irrelevant variable in
+# neural networks. The attacks are, for each level of imbalance of the
+# irrelevant variable, logistic regressors trained on all the models trained on
+# 80 of the datasets (a total of 80x100x2). The accuracy is the evaluation of
+# the regressor in all the models trained on the remaining 20 datasets.
+###############################################################################
 import numpy as np
 import os, random
 import pandas as pd

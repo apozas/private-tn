@@ -10,12 +10,12 @@
 #           pickle for data loading
 #           time for time tracking
 #           tqdm for progress bar
-# Last modified: Feb, 2022
+# Last modified: Feb, 2023
 
-################################################################################
+###############################################################################
 # This file takes all trained MPS architectures and generates a dataset
 # containing all the parameters of each model, either in canonical form or not.
-################################################################################
+###############################################################################
 import numpy as np
 import os, sys
 import pandas as pd
@@ -26,10 +26,10 @@ from time import time
 from tqdm import tqdm
 from utils_mps import flatten_mps_tensors
 
-################################################################################
+###############################################################################
 # Argument parsing
 # Arguments to be input: whether canonical form is generated (c) or not (n)
-################################################################################
+###############################################################################
 args = sys.argv
 if len(args) != 2:
     raise Exception('Please, specify whether you want to compute the canonical'
@@ -55,8 +55,8 @@ param_names = []
 for ii, param in enumerate(MPS.tensors_in_finiteMPS_notation()):
     names = np.array([[[f'w{ii}_{jj}_{kk}_{ll}'
                         for jj in range(param.shape[0])]
-                        for kk in range(param.shape[1])]
-                        for ll in range(param.shape[2])]).flatten().tolist()
+                       for kk in range(param.shape[1])]
+                      for ll in range(param.shape[2])]).flatten().tolist()
     param_names += names
 
 all_columns = ['dataset', 'id', 'imbalance', 'type', 'accuracy'] + param_names

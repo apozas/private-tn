@@ -6,15 +6,16 @@
 #
 # Requires: tensorflow for ML
 #           tensornetwork for tensor network operations
-# Last modified: Feb, 2022
+# Last modified: Feb, 2023
 
-################################################################################
+###############################################################################
 # This file contains functions needed for the evaluation of MPS on input data.
 # They are adaptations of the necessary functions of the TensorNetwork library
 # (see www.github.com/google/tensornetwork).
-################################################################################
+###############################################################################
 import tensorflow as tf
 import tensornetwork as tn
+
 
 def batched_contract_between(node1: tn.Node,
                              node2: tn.Node,
@@ -42,22 +43,22 @@ def batched_contract_between(node1: tn.Node,
     # stop computing if both nodes are the same
     if node1 is node2:
         raise ValueError("Cannot perform batched contraction between "
-                                         "node '{}' and itself.".format(node1))
+                         "node '{}' and itself.".format(node1))
 
     # computing shared edges
     shared_edges = tn.get_shared_edges(node1, node2)
     # stop computing if there are not shared edges
     if not shared_edges:
         raise ValueError("No edges found between nodes "
-                                         "'{}' and '{}'".format(node1, node2))
+                         "'{}' and '{}'".format(node1, node2))
 
     # stop computing if badge edges are in shared edges
     if batch_edge1 in shared_edges:
         raise ValueError(
-              "Batch edge '{}' is shared between the nodes".format(batch_edge1))
+            "Batch edge '{}' is shared between the nodes".format(batch_edge1))
     if batch_edge2 in shared_edges:
         raise ValueError(
-              "Batch edge '{}' is shared between the nodes".format(batch_edge2))
+            "Batch edge '{}' is shared between the nodes".format(batch_edge2))
 
     n_shared = len(shared_edges)
     # create a dictionary where each edge is a key, and each value is a letter
@@ -104,19 +105,19 @@ def batched_contract_between(node1: tn.Node,
 def pairwise_reduction(node: tn.Node, edge: tn.Edge) -> tn.Node:
     '''Parallel contraction of matrix chains.
 
-    The operation performed by this function is described in Fig. 4 of the paper
-    `Tensor Networks for Machine Learning`. It leads to a more efficient
+    The operation performed by this function is described in Fig. 4 of the
+    paper `Tensor Networks for Machine Learning`. It leads to a more efficient
     implementation of the MPS classifier both in terms of predictions and
-    automatic gradient calculation. The idea is that the whole MPS side is saved
-    in memory as one node that carries an artificial "space" edge. This function
-    removes this additional index by performing the pairwise contractions as
-    shown in the Figure.
+    automatic gradient calculation. The idea is that the whole MPS side is
+    saved in memory as one node that carries an artificial "space" edge. This
+    function removes this additional index by performing the pairwise
+    contractions as shown in the Figure.
 
     Args:
         net: tn that contains the node we want to reduce.
         node: Node to reduce pairwise. The corresponding tensor should have the
-            form (..., space edge, ..., a, b) and matrix multiplications will be
-            performed over the last two indices using matmul.
+            form (..., space edge, ..., a, b) and matrix multiplications will
+            be performed over the last two indices using matmul.
         edge: Space edge of the node.
 
     Returns:
@@ -124,10 +125,11 @@ def pairwise_reduction(node: tn.Node, edge: tn.Edge) -> tn.Node:
               `edge` removed.
     '''
     # NOTE: This method could be included in the Batchedtn class
-    # however it seems better to be separated because (at least with the current
-    # implementation) it performs a very specialized/non-general operation.
-    # It also uses tf.matmul which restricts the backend, however this can be
-    # easily generalized since all the backends support batched matmul.
+    # however it seems better to be separated because (at least with the
+    # current implementation) it performs a very specialized/non-general
+    # operation. It also uses tf.matmul which restricts the backend, however
+    # this can be easily generalized since all the backends support batched
+    # matmul.
     if not edge.is_dangling():
         raise ValueError("Cannot reduce non-dangling edge '{}'".format(edge))
     if edge.node1 is not node:

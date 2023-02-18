@@ -10,12 +10,12 @@
 #           time for time tracking
 #           torch for ML
 #           tqdm for progress bar
-# Last modified: Feb, 2022
+# Last modified: Feb, 2023
 
-################################################################################
-# This file takes all trained neural networks and generates a dataset containing
-# all the parameters of each model.
-################################################################################
+###############################################################################
+# This file takes all trained neural networks and generates a dataset
+# containing all the parameters of each model.
+###############################################################################
 import os
 import numpy as np
 import pandas as pd
@@ -41,7 +41,7 @@ for param in model.parameters():
     elif param.ndim == 2:
         names = np.array([[f'w{weights_idx}_{ii}_{jj}'
                            for ii in range(param.shape[0])]
-                           for jj in range(param.shape[1])]).flatten().tolist()
+                          for jj in range(param.shape[1])]).flatten().tolist()
         weights_idx += 1
     else:
         print('Something is wrong with')
