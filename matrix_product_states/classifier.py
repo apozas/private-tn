@@ -462,3 +462,49 @@ class MatrixProductState:
             self.right_env.matrices = self.tensors[i]
             i = i + 1
         self.right_env.vector = self.tensors[i]
+
+    def univocal_form(self):
+        '''Computes the parameters describing the univocal form of the MPS.'''
+        mps_tensors = self.tensors_in_finiteMPS_notation()
+        uni_tensors = []
+        for idx in range(len(mps_tensors)):
+            if idx == 0:
+                size = mps_tensors[idx].shape[1]
+                tensor = tf.reshape(tf.Variable(np.eye(size),
+                                                dtype=self.dtype),
+                                    mps_tensors[idx].shape)
+                uni_tensors.append(tensor)
+            elif idx < len(mps_tensors) - 1:
+                L = tf.einsum('abc,cde,efg->abdfg',
+                              *(mps_tensors[ii] for ii in range(idx-1, idx+2)))
+                if idx == 1:
+                    left = np.array([[1]])
+                else:
+                    left = mps_tensors[0][:, 0, :]
+                for jj in range(1, idx-1):
+                    left = left @ mps_tensors[jj][:, 0, :]
+                if idx < len(mps_tensors) - 2:
+                    right = np.eye(mps_tensors[idx].shape[-1])
+                    for jj in range(idx+2, len(mps_tensors)):
+                        right = right @ mps_tensors[jj][:, 0, :]
+                else:
+                    right = np.array([[1]])
+                L = tf.einsum('xa,abcde,ez->xbcdz', left, L, right)
+                tensor = tf.einsum('xabcz,cd->xabdz',
+                                   L,
+                                   np.linalg.inv(L[0, 0, :, :, 0]))
+                uni_tensors.append(tensor[0, ..., 0])
+            else:
+                L = tf.einsum('abc,cde->abde', *mps_tensors[-2:])
+                left = mps_tensors[0][:, 0, :]
+                for jj in range(1, idx - 1):
+                    left = left @ mps_tensors[jj][:, 0, :]
+                tensor = tf.einsum('xa,abcz->xbcz', left, L)
+                uni_tensors.append(tensor[0, ...])
+        finite_mps = FiniteMPS(uni_tensors,
+                               canonicalize=False,
+                               backend='tensorflow')
+        self.from_finite(finite_mps)
+        self.update_environment_attributes()
+
+        return self
