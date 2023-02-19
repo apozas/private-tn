@@ -299,7 +299,6 @@ class MatrixProductState:
                                        data[:, -2:self.position-1:-1])
         return tf.einsum('bl,olr,br->bo', left, self.labeled, right)
 
-
     def from_finite(self, finite_mps, right_biased=True):
         '''Convert a FiniteMPS from TensorNetwork to a MatrixProductState.
 
@@ -349,12 +348,12 @@ class MatrixProductState:
         if ((n_features == 3) & (not right_biased)) | (n_features >= 4):
             mps_left_bulk = tf.Variable(np.array(
                       tensors_transposed_and_padded_bulk[0:(n_features-2)//2]),
-                                        dtype=finite_mps.dtype)
+                      dtype=finite_mps.dtype)
             mps_tensors.append(mps_left_bulk)
 
         mps_center = tf.Variable(
                          tensors_transposed_and_padded_bulk[(n_features-2)//2],
-                                 dtype=finite_mps.dtype)
+                         dtype=finite_mps.dtype)
         mps_tensors.append(mps_center)
 
         if ((n_features == 3) & right_biased) | (n_features >= 4):
