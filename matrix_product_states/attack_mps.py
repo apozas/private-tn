@@ -39,26 +39,42 @@ from tqdm import tqdm
 # Arguments to be input: whether canonical form is generated (c) or not (n)
 ###############################################################################
 args = sys.argv
-if len(args) != 2:
-    raise Exception('Please, specify whether you want to attack the canonical'
+sample = ''
+if len(args) not in [2, 3]:
+    raise Exception('Please, specify whether you want to attack the canonical '
                     + 'form of the MPS by adding the argument `c` (for '
-                    + 'canonical) or `n` (for non-canonical) after calling the '
-                    + 'file.')
+                    + 'canonical), `n` (for non-canonical) or `u` (for '
+                    + 'univocal) after calling the file.')
 else:
-    if args[1] == 'c':
-        canonical = True
-    elif args[1] == 'n':
-        canonical = False
-    else:
+    if args[1] not in ['c', 'n', 'u']:
         raise Exception('Please, only use the arguments `c` for attacking the '
                         + 'database of canonical-form MPS, or `n` for the '
                         + 'database of non-canonical MPS.')
+    else:
+        can = args[1]
+        if can == 'c':
+            can_str    = 'can'
+            canoni_str = 'canoni'
+        elif can == 'n':
+            can_str    = 'ncan'
+            canoni_str = 'non-canoni'
+        else:
+            can_str    = 'uni'
+            canoni_str = 'univo'
+    if len(args) == 3:
+        if args[2] != 's':
+            raise Exception('The last argument must only be `s` in case you '
+                            + 'want to sample resudial gauges. Otherwise, '
+                            + 'leave it blank')
+        else:
+            sample = '_sample'
 
-################################################################################
-# Attack: a neural network that is trained on many collections of MPS parameters
-# and whose task is to infer the nature of one of the variables used in the
-# training dataset of such models
-################################################################################
+
+###############################################################################
+# Attack: a neural network that is trained on many collections of MPS
+# parameters and whose task is to infer the nature of one of the variables used
+# in the training dataset of such models
+###############################################################################
 def define_attack_and_train(train_data, train_labels, val_data, val_labels,
                             test_data, test_labels, hparams,
                             verbose=False):
@@ -117,9 +133,9 @@ def define_attack_and_train(train_data, train_labels, val_data, val_labels,
 parent_dir   = '..'
 data_dir     = f'{parent_dir}/datasets'
 attack_dir   = f'{parent_dir}/results'
-can_str      = '' if canonical else 'n'
-all_models   = pd.read_csv(f'{data_dir}/dataset_of_mps_models_{can_str}can.csv',
-                         index_col=0)
+all_models   = pd.read_csv(data_dir + '/dataset_of_mps_models_'
+                           + f'{can_str}{sample}.csv',
+                           index_col=0)
 test_size        = 0.2
 n_train_datasets = 80  # No. of datasets whose models will be used for training
 data_columns     = all_models.columns[5:]
@@ -198,7 +214,7 @@ for imbalance, dataset in tqdm(all_models.groupby('imbalance'),
     test_stds.append(np.std(test_accs_attacks))
 
 print('Test accuracies, shadow training attacks on '
-      + '{}canonical MPS models:'.format('non-' if can_str else ''))
+      + f'{canoni_str}cal MPS models:')
 print('Mean: ', test_accs)
 print('Std: ',  test_stds)
 
@@ -210,4 +226,4 @@ if not os.path.exists(attack_dir):
 attack_rows = np.array(attack_rows, dtype=object).T
 pd.DataFrame(dict(zip(attack_cols, attack_rows)), dtype=object) \
             .sort_values(by=['imbalance']).reset_index(drop=True) \
-            .to_csv(f'{attack_dir}/attacks_mps_{can_str}can.csv')
+            .to_csv(f'{attack_dir}/attacks_mps_{can_str}{sample}.csv')

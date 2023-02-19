@@ -31,20 +31,32 @@ from utils_mps import flatten_mps_tensors
 # Arguments to be input: whether canonical form is generated (c) or not (n)
 ###############################################################################
 args = sys.argv
-if len(args) != 2:
-    raise Exception('Please, specify whether you want to compute the canonical'
-                    + 'form of the MPS by adding the argument `c` (for'
-                    + 'canonical) or `n` (for non-canonical) after calling the '
-                    + 'file.')
+sample = ''
+if len(args) not in [2, 3]:
+    raise Exception('Please, specify whether you want to attack the canonical '
+                    + 'form of the MPS by adding the argument `c` (for '
+                    + 'canonical), `n` (for non-canonical) or `u` (for '
+                    + 'univocal) after calling the file.')
 else:
-    if args[1] == 'c':
-        canonical = True
-    elif args[1] == 'n':
-        canonical = False
-    else:
-        raise Exception('Please, only use the arguments `c` for generating the '
+    if args[1] not in ['c', 'n', 'u']:
+        raise Exception('Please, only use the arguments `c` for attacking the '
                         + 'database of canonical-form MPS, or `n` for the '
                         + 'database of non-canonical MPS.')
+    else:
+        can = args[1]
+        if can == 'c':
+            can_str = 'can'
+        elif can == 'n':
+            can_str = 'ncan'
+        else:
+            can_str = 'uni'
+    if len(args) == 3:
+        if args[2] != 's':
+            raise Exception('The last argument must only be `s` in case you '
+                            + 'want to sample resudial gauges. Otherwise, '
+                            + 'leave it blank')
+        else:
+            sample = '_sample'
 
 parent_dir  = '..'
 data_dir    = f'{parent_dir}/datasets'
@@ -82,11 +94,14 @@ for instance in tqdm(os.listdir(model_dir)):
                 if typ == 'ven':
                     typ = 'even'
                 # Read parameters
-                if canonical:
+                if can == 'c':
                     tensors = MPS.canonical_form(
-                                               ).tensors_in_finiteMPS_notation()
-                else:
+                                              ).tensors_in_finiteMPS_notation()
+                elif can == 'n':
                     tensors = MPS.tensors_in_finiteMPS_notation()
+                else:
+                    tensors = MPS.univocal_form(
+                                              ).tensors_in_finiteMPS_notation()
 
                 params   = flatten_mps_tensors(tensors)
                 row_data = [instance, id, imbalance, typ, accuracy] + params
@@ -103,5 +118,4 @@ print(dataframe.describe())
 
 dataframe = dataframe.sort_values(by=['dataset', 'type', 'imbalance', 'id'])
 dataframe = dataframe.reset_index(drop=True)
-can_str = '' if canonical else 'n'
-dataframe.to_csv(f'{data_dir}/dataset_of_mps_models_{can_str}can.csv')
+dataframe.to_csv(f'{data_dir}/dataset_of_mps_models_{can_str}{sample}.csv')

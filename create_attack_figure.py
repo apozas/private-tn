@@ -58,13 +58,34 @@ for imbalance, attacks in mps_can_data.groupby('imbalance'):
     acc_mps_can.append(attacks['test_acc'].mean())
     std_mps_can.append(attacks['test_acc'].std())
 
+# MPS in canonical form with sampled residual gauge
+mps_can_s_data = pd.read_csv(f'{results_dir}/attacks_mps_can_sample.csv',
+                             index_col=0)
+acc_mps_can_s  = []
+std_mps_can_s  = []
+for imbalance, attacks in mps_can_s_data.groupby('imbalance'):
+    acc_mps_can_s.append(attacks['test_acc'].mean())
+    std_mps_can_s.append(attacks['test_acc'].std())
+
+# MPS in univocal form
+mps_uni_data = pd.read_csv(f'{results_dir}/attacks_mps_uni.csv', index_col=0)
+acc_mps_uni  = []
+std_mps_uni  = []
+for imbalance, attacks in mps_uni_data.groupby('imbalance'):
+    acc_mps_uni.append(attacks['test_acc'].mean())
+    std_mps_uni.append(attacks['test_acc'].std())
+
 # Plot
 plt.errorbar(imbalances, acc_nn, std_nn,
              marker='*', markersize=10, label='Neural networks')
 plt.errorbar(imbalances, acc_mps_ncan, std_mps_ncan,
              marker='o', label='MPS')
 plt.errorbar(imbalances, acc_mps_can, std_mps_can,
-             marker='d', label=('MPS, canonical'))
+             marker='d', label=('MPS+C'))
+plt.errorbar(imbalances, acc_mps_can_s, std_mps_can_s,
+             marker='p', label=('MPS+C+S'))
+plt.errorbar(imbalances, acc_mps_uni, std_mps_uni,
+             marker='x', label=('MPS+U'))
 plt.legend()
 plt.xlabel('Percentage of majority irrelevant class')
 plt.ylabel('Average attack accuracy')
